@@ -108,31 +108,55 @@ void posicionaNavios(char matriz[10][10], int T, char o, int x, int y, char simb
     }
 }
 
-void ataque(char matriz[10][10], char tipoDeAtaque, int* combo) {
+void ataque(char matriz[10][10], char tipoDeAtaque, int* combo, int* pontos) {
     if (tipoDeAtaque == 'e') {
         
         if (*combo >= 2) {
-            char o = ' ', coordenada = ' ';
+            char o = ' ';
+            int coordenada = 0;
             printf("Ataque especial solicitado. Forneça uma orientação 'o' ('v' ou 'h'): \n");
-            scanf("%c", &o);
+            scanf(" %c", &o);
 
             
-            if (o == 'v') {
+            if (o == 'h') {
                 printf("Forneça a linha em que deseja realizar o ataque especial: \n");
-                scanf(" %c", &coordenada);
+                scanf("%d", &coordenada);
 
-                for (int i = 0; i < 10; i++) {
-                    matriz[coordenada][i] = '0';
+                if (percorreToroide(matriz, 10, 'h', coordenada, 0)) {
+                    printf("Nenhum navio encontrado na coordenada fornecida. Ataque especial mal-sucedido.\n");
+
+                } else {
+
+                    for (int i = 0; i < 10; i++) {
+                        printf("%c\n", matriz[coordenada][i]);
+                        if (matriz[coordenada][i] != '0') {
+                            (*pontos) = (*pontos) + 1;
+                            matriz[coordenada][i] = '0';
+                        }
+                    }
+
+                    printf("Ataque especial bem-sucesso.\n");
                 }
 
                 *combo = 0;
 
-            } else if (o = 'h') {
+            } else if (o = 'v') {
                 printf("Forneça a coluna em que deseja realizar o ataque especial: \n");
-                scanf(" %c", &coordenada);
+                scanf("%d", &coordenada);
 
-                for (int i = 0; i < 10; i++) {
-                    matriz[i][coordenada] = '0';
+                if (percorreToroide(matriz, 10, 'v', 0, coordenada)) {
+                    printf("Nenhum navio encontrado na coordenada fornecida. Ataque especial mal-sucedido.\n");
+
+                } else {
+                    for (int i = 0; i < 10; i++) {
+                        printf("%c\n", matriz[i][coordenada]);
+                        if (matriz[i][coordenada] != '0') {
+                            (*pontos) = (*pontos) + 1;
+                            matriz[i][coordenada] = '0';
+                        }
+                    }
+
+                    printf("Ataque especial bem-sucesso.\n");
                 }
 
                 *combo = 0;
@@ -153,12 +177,13 @@ void ataque(char matriz[10][10], char tipoDeAtaque, int* combo) {
         printf("Forneça a linha e a coluna, respectivamente, em que deseja realizar o ataque: \n");
         scanf("%1d%1d", &x, &y);
 
-        if (!percorreToroide(matriz, 1, 'v', x, y)) { // se retornar false, é porque encontrou um navio
+        if (percorreToroide(matriz, 1, 'v', x, y)) { // se retornar false, é porque encontrou um navio
+            printf("Nenhum navio encontrado na coordenada fornecida. Ataque normal mal-sucedido.\n");
+        } else {
             matriz[x][y] = '0';
             printf("Ataque normal bem-sucesso. Combo incrementado.\n");
-            combo++;
-        } else {
-            printf("Nenhum navio encontrado na coordenada fornecida. Ataque normal mal-sucedido.\n");
+            (*pontos) = (*pontos) + 1;
+            (*combo) = (*combo) + 1;
         }
 
 
@@ -217,7 +242,7 @@ int main () {
     imprimeMatriz(matriz);
 
     int A = 0;
-    int comboAlgoritmistas = 0, comboEstruturistas = 0;
+    int comboAlgoritmistas = 0, pontosAlgoritmistas = 0, comboEstruturistas = 0, pontosEstruturistas = 0;
     char c = ' ';
 
     printf("Insira o número A ∈ [0,200] de rodadas: \n");
@@ -226,20 +251,32 @@ int main () {
     while (A > 0) {
 
         printf("Ataque dos Algoritmistas! \n");
+        printf("Os Algoritmistas têm %d pontos!\n", pontosAlgoritmistas);
         printf("Forneça o tipo de ataque 'c' ('n' ou 'e'): \n");
         scanf(" %c", &c);
-        ataque(matriz, c, &comboAlgoritmistas);
+        ataque(matriz, c, &comboAlgoritmistas, &pontosAlgoritmistas);
 
         imprimeMatriz(matriz);
 
         printf("Ataque dos Estruturistas! \n");
+        printf("Os Estruturistas têm %d pontos!\n", pontosEstruturistas);
         printf("Forneça o tipo de ataque 'c' ('n' ou 'e'): \n");
         scanf(" %c", &c);
-        ataque(matriz, c, &comboEstruturistas);
+        ataque(matriz, c, &comboEstruturistas, &pontosEstruturistas);
 
         imprimeMatriz(matriz);
 
         A--;
+    }
+
+    printf("\n");
+
+    if (pontosAlgoritmistas > pontosEstruturistas) {
+        printf("Algoritmistas venceram com %d pontos!\n", pontosAlgoritmistas);
+    } else if (pontosEstruturistas > pontosAlgoritmistas) {
+        printf("Estruturistas venceram com %d pontos!\n", pontosEstruturistas);
+    } else {
+        printf("Empate!\n");
     }
 
     return 0;
