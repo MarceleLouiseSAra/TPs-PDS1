@@ -22,6 +22,14 @@ void imprimirVetor(int *vetor, int tamanho) {
     printf("\n");
 }
 
+int qualEhMaior(int a, int b) {
+    return a > b ? a : b;
+}
+
+int qualEhMenor(int a, int b) {
+    return a < b ? a : b;
+}
+
 void bromerosort(int *vetor, int passo) {
     // printf("entrei no bromerosort\n");
     // printf("passo: %d\n", passo);
@@ -35,9 +43,8 @@ void bromerosort(int *vetor, int passo) {
         return;
 
     } else {
-        int maior = 0, menor = 0;
-        menor = vetor[0] < vetor[1] ? vetor[0] : vetor[1];
-        maior = vetor[0] > vetor[1] ? vetor[0] : vetor[1];
+        int menor = qualEhMenor(vetor[0], vetor[1]);
+        int maior = qualEhMaior(vetor[0], vetor[1]);
         // printf("maior: %d\nmenor: %d \n", maior, menor);
         vetor[0] = menor;
         vetor[1] = maior;
@@ -63,18 +70,26 @@ void ritacao(int *vetor, int *vetorAuxiliar, int tamanho) {
         // printf("tamanho == 1 || tamanho == 0\n");
         return;
     } else {
-        
-        int k = 1, sobrou = 0;
 
-        for (int i = 0, j = 0; k < 4; k++) {
+        for (int i = 0, j = 0, k = 1; k < 4; k++) {
 
             printf("i: %d\nj: %d\nk: %d\n", i, j, k);
-            
-            printf("vetor[i]: %d\nvetor[j+2]: %d\n", vetor[i], vetor[j+2]);
-            
-            int menor = 0;
-            menor = vetor[i] < vetor[j+2] ? vetor[i] : vetor[j+2];
-            sobrou = vetor[i] > vetor[j+2] ? vetor[i] : vetor[j+2];
+
+            int menor = 0, sobrou = 0;
+
+            if (i == 2 && j == 0) {
+                menor = qualEhMenor(vetor[j+2], vetor[j+3]);
+                sobrou = qualEhMaior(vetor[j+2], vetor[j+3]);
+
+            } else if (j == 2 && i == 0) {
+                menor = qualEhMenor(vetor[i], vetor[i+1]);
+                sobrou = qualEhMaior(vetor[i], vetor[i+1]);
+
+            } else {
+                menor =  qualEhMenor(vetor[i], vetor[j+2]);
+                sobrou = qualEhMaior(vetor[i], vetor[j+2]);
+            }
+
 
             printf("menor: %d\n", menor);
             printf("sobrou: %d\n", sobrou);
@@ -88,20 +103,9 @@ void ritacao(int *vetor, int *vetorAuxiliar, int tamanho) {
             if (vetor[i] == menor && i < 2) {
                 i++;
 
-                if (i == 2){
-                    i = 1;
-                    j++;
-                }
-
             } else if (vetor[j+2] == menor && j < 2) {
                 j++;
-
-                if (j == 2){
-                    j = 1;
-                    i++;
-                }
-            } 
-
+            }
         }
     }
 
